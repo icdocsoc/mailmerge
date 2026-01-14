@@ -19,12 +19,149 @@ npm install -g @docsoc/mailmerge-cli
 ### Locally
 
 1. Run `npm install` from the root of the repo
-2. Run `npm run build` in this folder (`email/mailmerge-cli`)
+2. Run `npm run build` in this folder (`mailmerge-cli`)
 3. Run `npm link` in this folder - this adds `docsoc-mailmerge` to your path
 
 ## Quick Start
 
-In a blank directory, run `docsoc-mailmerge init`, then read the output and follow the steps.
+In a blank directory, run:
+
+```bash
+docsoc-mailmerge init
+# Or if using react
+docsoc-mailmerge init --react
+```
+
+Then follow the instructions in the output.
+
+## Usage Guide
+
+### 1. Set Up Your Workspace
+
+**If using nunjucks template (default):**
+In a blank directory (your "mailmerge workspace"), create these folders and files:
+
+1. `./data/names.csv` - CSV file with at minimum `to` and `subject` columns
+2. `./templates/template.md.njk` - Nunjucks markdown template for your emails
+3. `./templates/wrapper.html.njk` - HTML wrapper for the email
+
+**If using React template:**
+Read the instructions in `mailmerge-cli/assets/template-react-email/README.md`, or your generated README.md if you used `docsoc-mailmerge init --react`.
+
+### 2. Generate Emails
+
+Run the generate command to create emails from your template and data:
+
+```bash
+docsoc-mailmerge generate nunjucks ./data/names.csv -o ./output --htmlTemplate=./templates/wrapper.html.njk
+
+# Or, using the React template:
+docsoc-mailmerge generate react ./data/names.csv ./emails-out/Example.js -o ./output
+```
+
+You'll be prompted for a runname. Generated emails will be placed at `./output/<runname>`.
+
+Each record in the CSV results in 3 files:
+- An editable **markdown file** for modifying the email
+- A **HTML rendering** of the markdown (what actually gets sent)
+- A **`.json` metadata file** with email details
+
+> **Note:** If you need to edit the "to" address or subject after generation, edit the JSON files. CSV edits are ignored after generation. To use CSV edits, delete all outputs and run generate again.
+
+### 3. Edit Your Emails
+
+Edit the generated markdown files to customize individual emails.
+
+### 4. Regenerate HTML Previews
+
+After editing markdown files (or recompiling your react template), regenerate the HTML previews:
+
+```bash
+docsoc-mailmerge regenerate ./output/<runname>
+```
+
+You can run `regenerate` as many times as needed.
+
+### 5. Send Emails
+
+Once you're satisfied with your emails:
+
+```bash
+docsoc-mailmerge send ./output/<runname>
+```
+
+> **Important:** The `send` command does NOT run `regenerate`, so make sure you've regenerated after any markdown edits.
+
+Sent email previews are automatically moved to `./output/<runname>/sent` to prevent accidental double-sending.
+
+## Advanced Features
+
+### Attachments
+
+Place attachments in an `attachments` folder. There are two ways to add them:
+
+**Per-email attachments (using CSV):**
+
+1. Add an `attachment` column to your CSV with the path relative to workspace root
+   - Example: `./attachments/image.jpg`
+2. Use multiple columns (`attachment1`, `attachment2`) for multiple attachments
+3. You'll be prompted which columns to use during `generate`
+4. To edit attachments later, modify the JSON metadata files
+
+**Same attachment for all emails (using CLI flag):**
+
+```bash
+docsoc-mailmerge generate nunjucks ./data/names.csv -o ./output -a ./attachments/image.jpg -a ./attachments/image2.jpg
+```
+
+Note: CLI flags override any attachment info in the CSV.
+
+### CC, BCC, and Multiple Recipients
+
+- **Multiple To addresses:** Separate emails with spaces in the CSV column
+- **CC:** Add a `cc` column with space-separated emails and pass `--cc` to `generate`
+- **BCC:** Add a `bcc` column with space-separated emails and pass `--bcc` to `generate`
+
+### Upload to Drafts Instead of Sending
+
+To upload emails to Outlook drafts instead of sending:
+
+```bash
+docsoc-mailmerge upload-drafts ./output/<runname>
+```
+
+### Rate Limiting
+
+If you're hitting rate limits, use the `-s` flag to add a delay (in seconds) between each email:
+
+```bash
+docsoc-mailmerge send ./output/<runname> -s 2
+```
+
+### Inline Images
+You can create an `images.json` file to specify images to attach inline images.
+It should have a format like this:
+```json
+[
+    {
+        "path": "./attachments/image1.jpg",
+        "filename": "image1.jpg",
+        "cid": "animage"
+    }
+]
+```
+
+You then use the `cid` to reference the image:
+```html
+<img src="cid:animage" alt="An Image" />
+```
+
+Note that you need to tell mailmerge about the iamges files on send:
+```bash
+docsoc-mailmerge send ... -i ./images.json
+```
+
+Upload-drafts does not currently support inline images either.
 
 ## Detailed Steps
 

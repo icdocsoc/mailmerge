@@ -30,6 +30,8 @@ In a blank directory, run:
 
 ```bash
 docsoc-mailmerge init
+# Or if using react
+docsoc-mailmerge init --react
 ```
 
 Then follow the instructions in the output.
@@ -38,11 +40,15 @@ Then follow the instructions in the output.
 
 ### 1. Set Up Your Workspace
 
+**If using nunjucks template (default):**
 In a blank directory (your "mailmerge workspace"), create these folders and files:
 
 1. `./data/names.csv` - CSV file with at minimum `to` and `subject` columns
 2. `./templates/template.md.njk` - Nunjucks markdown template for your emails
 3. `./templates/wrapper.html.njk` - HTML wrapper for the email
+
+**If using React template:**
+Read the instructions in `mailmerge-cli/assets/template-react-email/README.md`, or your generated README.md if you used `docsoc-mailmerge init --react`.
 
 ### 2. Generate Emails
 
@@ -50,6 +56,9 @@ Run the generate command to create emails from your template and data:
 
 ```bash
 docsoc-mailmerge generate nunjucks ./data/names.csv -o ./output --htmlTemplate=./templates/wrapper.html.njk
+
+# Or, using the React template:
+docsoc-mailmerge generate react ./data/names.csv ./emails-out/Example.js -o ./output
 ```
 
 You'll be prompted for a runname. Generated emails will be placed at `./output/<runname>`.
@@ -67,7 +76,7 @@ Edit the generated markdown files to customize individual emails.
 
 ### 4. Regenerate HTML Previews
 
-After editing markdown files, regenerate the HTML previews:
+After editing markdown files (or recompiling your react template), regenerate the HTML previews:
 
 ```bash
 docsoc-mailmerge regenerate ./output/<runname>
@@ -130,6 +139,31 @@ If you're hitting rate limits, use the `-s` flag to add a delay (in seconds) bet
 ```bash
 docsoc-mailmerge send ./output/<runname> -s 2
 ```
+
+### Inline Images
+You can create an `images.json` file to specify images to attach inline images.
+It should have a format like this:
+```json
+[
+    {
+        "path": "./attachments/image1.jpg",
+        "filename": "image1.jpg",
+        "cid": "animage"
+    }
+]
+```
+
+You then use the `cid` to reference the image:
+```html
+<img src="cid:animage" alt="An Image" />
+```
+
+Note that you need to tell mailmerge about the iamges files on send:
+```bash
+docsoc-mailmerge send ... -i ./images.json
+```
+
+Upload-drafts does not currently support inline images either.
 
 ## Using the Library Directly
 

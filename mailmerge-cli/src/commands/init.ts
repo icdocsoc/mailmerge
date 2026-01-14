@@ -18,7 +18,7 @@ export default class Init extends Command {
     };
 
     static override description =
-        "iIitialise a new mailmerge workspace, complete with the necessary .env file and sample data";
+        "Initialise a new mailmerge workspace, complete with the necessary .env file and sample data";
 
     static override examples = ["<%= config.bin %> <%= command.id %>"];
 

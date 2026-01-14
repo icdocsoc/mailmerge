@@ -27,7 +27,7 @@ export default class GenerateReact extends Command {
         template: Args.string({
             description: "Path to the React component to use to generate emails",
             required: true,
-            default: join(DEFAULT_DIRS.TEMPLATES, "template.md.njk"),
+            default: join(DEFAULT_DIRS.REACT_TEMPLATES, "Example.js"),
         }),
     };
 
