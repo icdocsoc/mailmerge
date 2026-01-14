@@ -7,10 +7,14 @@ DoCSoc's most important tool: flexibly generate and send emails in bulk using te
 
 ## What is this?
 
-This is a monorepo containing two packages:
+This is a monorepo containing three packages:
 
 - **`mailmerge`** - A core library for mail merge operations including template rendering, data merging, email sending via SMTP, and uploading to Outlook drafts
 - **`mailmerge-cli`** - A command-line tool that provides an easy-to-use interface for the mailmerge library
+- **`utils`** - Shared utility functions used by the other packages (kept private)
+	- This is mostly there as these tools used to live in a monorepo with such a package, and updating all the test mocks etc to move it into the packages directly was deemed more effort than just copying the package as a package.
+
+There is also the `test-space` directory which has been used as a place to test the CLI inside by invoking it on sample data
 
 ## Installation
 
