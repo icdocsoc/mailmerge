@@ -1,0 +1,2 @@
+name,to,subject,attachment1,attachment2,bcc,cc
+Example Person,email1@example.com email2@example.co.uk,Example subject,./attachments/image1.jpg,./attachments/image2.jpg,bcc@london.com,cc@must-cc.org otherperson@example.com

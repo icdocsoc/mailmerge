@@ -1,0 +1,26 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "baseUrl": "."
+    },
+    "files": [],
+    "include": [],
+    "references": [
+        {
+            "path": "../mailmerge/tsconfig.json"
+        },
+        {
+            "path": "./tsconfig.lib.json"
+        },
+        {
+            "path": "./tsconfig.spec.json"
+        },
+    ]
+}

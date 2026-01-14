@@ -1,0 +1,9 @@
+{
+    "entryPoints": [
+        "email/*",
+        "common/*",
+    ],
+    "name": "DoCSoc Tools",
+    "entryPointStrategy": "packages",
+    "includeVersion": false,
+}

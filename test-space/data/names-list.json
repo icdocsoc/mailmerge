@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Kishan",
+        "to": "kishansambhi@hotmail.co.uk",
+        "subject": "DoCSoc x Kishan",
+        "alist": [
+            "One",
+            "Two",
+            "Three"
+        ]
+    },
+    {
+        "name": "NotKishan",
+        "to": "kishansambhi@hotmail.co.uk",
+        "subject": " DoCSoc x NotKishan",
+        "alist": [
+            "I",
+            "II",
+            "III"
+        ]
+    }
+]

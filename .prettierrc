@@ -1,0 +1,12 @@
+{
+    "singleQuote": false,
+    "trailingComma": "all",
+    "useTabs": false,
+    "tabWidth": 4,
+    "printWidth": 100,
+    "importOrderSeparation": true,
+    "importOrder": [
+        "<THIRD_PARTY_MODULES>",
+        "^[./]"
+    ]
+}

@@ -1,0 +1,20 @@
+[
+    {
+      "name": "Kishan",
+      "to": "kishansambhi@hotmail.co.uk",
+      "subject": "DoCSoc x Kishan",
+      "a1": "./attachments/DoCSoc Sponsorship Proposal 24-25.pdf",
+      "a2": "./attachments/munch.jpg",
+      "bcc": "kishansambhi@hotmail.co.uk",
+      "cc": "jaskishansaran@gmail.com kishansambhi@outlook.com"
+    },
+    {
+      "name": "NotKishan",
+      "to": "kishansambhi@hotmail.co.uk",
+      "subject": " DoCSoc x NotKishan",
+      "a1": "./attachments/DoCSoc Sponsorship Proposal 24-25.pdf",
+      "a2": "./attachments/munch.jpg",
+      "bcc": "",
+      "cc": ""
+    }
+  ]
