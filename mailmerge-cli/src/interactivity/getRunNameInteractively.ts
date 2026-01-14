@@ -17,7 +17,6 @@ export async function getRunNameInteractively() {
     });
 
     // Prompt the user for the run name
-    /// @ts-expect-error: The type of the prompt function is incorrect
     const answers = await inquirer.prompt([
         {
             type: "input",

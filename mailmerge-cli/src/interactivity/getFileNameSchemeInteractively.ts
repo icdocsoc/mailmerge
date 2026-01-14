@@ -22,7 +22,6 @@ export async function getFileNameSchemeInteractively(
         value: header,
     }));
 
-    /// @ts-expect-error: Inquirer type
     const answers = await inquirer.prompt([
         {
             type: "checkbox",

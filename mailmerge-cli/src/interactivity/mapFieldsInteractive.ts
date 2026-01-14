@@ -39,7 +39,6 @@ export const mapFieldsInteractive = async (
 
     const prompter = inquirer.prompt(
         // Provide the correct type for the prompt function
-        /// @ts-expect-error: The type of the prompt function is incorrect
         [...headers].map((header) => ({
             type: "list",
             name: header,
