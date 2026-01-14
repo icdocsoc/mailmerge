@@ -5,7 +5,6 @@ import inquirer from "inquirer";
  */
 export const getKeysForAttachments = async (fields: Set<string>): Promise<string[]> => {
     // Prompt user to select fields
-    /// @ts-expect-error: Bad inquirer types
     const answers = await inquirer.prompt([
         {
             type: "checkbox",

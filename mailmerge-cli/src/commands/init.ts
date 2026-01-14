@@ -1,5 +1,5 @@
 import { createLogger } from "@docsoc/util";
-import { Args, Command } from "@oclif/core";
+import { Args, Command, Flags } from "@oclif/core";
 import { join } from "path";
 import copy from "recursive-copy";
 
@@ -22,13 +22,25 @@ export default class Init extends Command {
 
     static override examples = ["<%= config.bin %> <%= command.id %>"];
 
-    static override flags = {};
+    static override flags = {
+        react: Flags.boolean({
+            description: "Initialise a React mailmerge workspace instead of Nunjucks",
+            default: false,
+        }),
+    };
 
     public async run(): Promise<void> {
-        const { args } = await this.parse(Init);
+        const { args, flags } = await this.parse(Init);
 
         /// @ts-expect-error: import.meta.dirname
-        const assetsToCopy = join(import.meta.dirname, "../../assets/template-workspace");
+        let assetsToCopy = join(import.meta.dirname, "../../assets/template-workspace");
+        if (flags.react) {
+            logger.info("Initialising React mailmerge workspace");
+            /// @ts-expect-error: import.meta.dirname
+            assetsToCopy = join(import.meta.dirname, "../../assets/template-react-email");
+        } else {
+            logger.info("Initialising Nunjucks mailmerge workspace");
+        }
 
         try {
             const results = await copy(assetsToCopy, args.directory);

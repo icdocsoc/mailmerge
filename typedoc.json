@@ -1,9 +1,10 @@
 {
     "entryPoints": [
-        "email/*",
-        "common/*",
+        "mailmerge/*",
+        "mailmerge-cli/*",
+        "util/*",
     ],
-    "name": "DoCSoc Tools",
+    "name": "DoCSoc Mailmerge",
     "entryPointStrategy": "packages",
     "includeVersion": false,
 }
