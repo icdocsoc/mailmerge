@@ -2,7 +2,7 @@
   "name": "@docsoc/mailmerge-workspace",
   "private": true,
   "version": "1.3.0",
-  "description": "This is a CLI tool that can be used to generate emails from templates, regenerate them after modifying the results, upload them to Outlook drafts and send them.",
+  "description": "DoCSoc's most important tool: flexibly generate and send emails in bulk using templates ",
   "keywords": [
     "mailmerge",
     "docsoc",
