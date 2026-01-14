@@ -48,6 +48,10 @@ DOCSOC_OUTLOOK_USERNAME=
 # Password to docsoc email
 DOCSOC_OUTLOOK_PASSWORD=
 
+# Option: set these if logging in as someone other than docsoc@ic.ac.uk or sending as someone else
+# DOCSOC_SENDER_NAME=DoCSoc
+# DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
+
 # Optional: Fill these in to uplod drafts
 # You will need to create an app registration in Entra ID, restricted to the organisation,
 # And grant it the following permissions:
