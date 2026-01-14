@@ -1,0 +1,32 @@
+{
+    "name": "@docsoc/util",
+    "version": "1.2.0",
+    "private": true,
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "tslib": "^2.3.0",
+        "winston": "^3.13.1"
+    },
+    "scripts": {
+        "build": "tsc --build --verbose",
+        "build-local": "tsc --build --verbose"
+    },
+    "type": "module",
+    "main": "./dist/index.js",
+    "typings": "./index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": "./index.js",
+        "./logger": "./logger.js"
+    },
+    "author": {
+        "name": "Kishan Sambhi",
+        "email": "kishansambhi@hotmail.co.uk"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/icdocsoc/docsoc-tools/tree/main/common/util#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/icdocsoc/docsoc-tools.git"
+    }
+}

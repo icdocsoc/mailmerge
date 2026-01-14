@@ -7,14 +7,12 @@
             "jest",
             "node"
         ],
-        "baseUrl": ".",
-        "jsx": "react",
+        "baseUrl": "."
     },
     "include": [
         "jest.config.ts",
         "src/**/*.test.ts",
         "src/**/*.spec.ts",
-        "src/**/*.d.ts",
-        "test/engines/react/index.tsx"
+        "src/**/*.d.ts"
     ]
 }

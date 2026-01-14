@@ -6,7 +6,7 @@
     },
     "dependencies": {
         "@docsoc/mailmerge": "^1.2.0",
-        "@docsoc/util": "^1.2.0",
+        "@docsoc/util": "file:../util",
         "@oclif/core": "^4.0.17",
         "inquirer": "^10.1.6",
         "mkdirp": "^3.0.1",

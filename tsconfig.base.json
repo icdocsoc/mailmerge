@@ -17,10 +17,8 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "paths": {
-            "@docsoc/eactivities": ["common/eactivities/src/index.ts"],
-            "@docsoc/mailmerge": ["email/mailmerge/src/index.ts"],
-            "@docsoc/mailmerge-cli": ["email/mailmerge-cli/src/index.ts"],
-            "@docsoc/util": ["common/util/src/index.ts"]
+            "@docsoc/mailmerge": ["mailmerge/src/index.ts"],
+            "@docsoc/mailmerge-cli": ["mailmerge-cli/src/index.ts"],
         }
     },
     "exclude": ["node_modules", "tmp"]
