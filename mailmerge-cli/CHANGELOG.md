@@ -1,5 +1,17 @@
 # @docsoc/mailmerge-cli
 
+## 2.0.0
+
+### Major Changes
+
+-   Bump to v2 as changed repo & how we publish
+
+### Patch Changes
+
+-   Updated dependencies
+    -   @docsoc/mailmerge@2.0.0
+    -   @docsoc/util@2.0.0
+
 ## 1.4.0
 
 ### Minor Changes

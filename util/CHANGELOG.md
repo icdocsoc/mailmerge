@@ -1,5 +1,11 @@
 # @docsoc/util
 
+## 2.0.0
+
+### Major Changes
+
+-   Bump to v2 as changed repo & how we publish
+
 ## 1.4.0
 
 ### Minor Changes
