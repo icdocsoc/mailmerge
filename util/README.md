@@ -12,8 +12,8 @@ Core utility functions for all DoCSoc tools, namely:
 
 ## Building
 
-Run `nx build util` to build the library.
+Run `npm run build`
 
 ## Running unit tests
 
-Run `nx test util` to execute the unit tests via [Jest](https://jestjs.io).
+Run `npm run test` to execute the unit tests via [Jest](https://jestjs.io).
