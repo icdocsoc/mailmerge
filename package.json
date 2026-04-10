@@ -29,7 +29,8 @@
   "author": "Kishan Sambhi <kishansambhi@hotmail.co.uk>",
   "workspaces": [
     "mailmerge",
-    "mailmerge-cli"
+    "mailmerge-cli",
+    "util"
   ],
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.24.8",
