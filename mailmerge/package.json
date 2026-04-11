@@ -1,13 +1,13 @@
 {
     "name": "@docsoc/mailmerge",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
         "@azure/identity": "^4.4.1",
         "@babel/preset-env": "^7.25.3",
-        "@docsoc/util": "^2.0.0",
+        "@docsoc/util": "^2.0.1",
         "@microsoft/microsoft-graph-client": "^3.0.7",
         "@react-email/render": "1.0.4",
         "@types/chalk": "^2.2.0",

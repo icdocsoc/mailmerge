@@ -1,5 +1,13 @@
 # @docsoc/mailmerge
 
+## 2.0.1
+
+### Patch Changes
+
+-   Fix issues where too many files were included
+-   Updated dependencies
+    -   @docsoc/util@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
