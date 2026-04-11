@@ -26,6 +26,15 @@
     "type": "module",
     "main": "./src/index.js",
     "typings": "./index.d.ts",
+    "files": [
+        "./src/**/*.js",
+        "./src/**/*.d.ts",
+        "./src/*.js",
+        "./src/*.d.ts",
+        "./index.js",
+        "./index.d.ts",
+        "./bin/run.js"
+    ],
     "bin": {
         "docsoc-mailmerge": "./bin/run.js"
     },

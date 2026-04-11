@@ -64,6 +64,14 @@
         "./previews": "./previews/index.js",
         "./util": "./util/index.js"
     },
+    "files": [
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/*.js",
+        "dist/*.d.ts",
+        "./index.js",
+        "./index.d.ts"
+    ],
     "author": {
         "name": "Kishan Sambhi",
         "email": "kishansambhi@hotmail.co.uk"
