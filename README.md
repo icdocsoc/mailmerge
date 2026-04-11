@@ -224,6 +224,11 @@ npm run format
 2. Navigate to `mailmerge-cli` and run `npm run build`
 3. Run `npm link` in the `mailmerge-cli` folder to add `docsoc-mailmerge` to your PATH
 
+## Publishing
+1. Create a new changeset using `npx changeset` and follow the prompts to specify version bumps and a summary of changes
+2. Version things using `npx changeset version` - this updates package.json files and creates changelog entries based on your changeset summaries
+3. Publish to npm using `npx changeset publish` (make sure you have logged into npm!)
+
 ## License
 
 MIT
