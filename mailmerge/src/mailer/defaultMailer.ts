@@ -6,6 +6,8 @@ import Mail from "nodemailer/lib/mailer";
 
 import { EmailString } from "../util/types.js";
 import Mailer from "./mailer.js";
+import OAuthMailer from "./oauthMailer.js";
+import type { Mailer as MailerInterface } from "./types.js";
 
 /**
  * Default mailer that uses the env vars `DOCSOC_SMTP_SERVER`, `DOCSOC_SMTP_USERNAME`, `DOCSOC_SMTP_PASSWORD` to create a mailer.
@@ -19,6 +21,36 @@ export const getDefaultMailer = () =>
         process.env["DOCSOC_OUTLOOK_USERNAME"] ?? "docsoc@ic.ac.uk",
         process.env["DOCSOC_OUTLOOK_PASSWORD"] ?? "password",
     );
+
+/**
+ * Default OAuth SMTP mailer that uses:
+ * - `DOCSOC_SMTP_SERVER`
+ * - `DOCSOC_SMTP_PORT`
+ * - `DOCSOC_OUTLOOK_USERNAME`
+ * - `MS_ENTRA_TENANT_ID`
+ * - `MS_ENTRA_CLIENT_ID`
+ */
+export const getDefaultOAuthMailer = () => {
+    const tenantId = process.env["MS_ENTRA_TENANT_ID"];
+    const clientId = process.env["MS_ENTRA_CLIENT_ID"];
+
+    if (!tenantId) {
+        throw new Error("MS_ENTRA_TENANT_ID is required for OAuth SMTP mailer.");
+    }
+    if (!clientId) {
+        throw new Error("MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.");
+    }
+
+    return new OAuthMailer(
+        process.env["DOCSOC_SMTP_SERVER"] ?? "smtp-mail.outlook.com",
+        process.env["DOCSOC_SMTP_PORT"] && isFinite(parseInt(process.env["DOCSOC_SMTP_PORT"]))
+            ? parseInt(process.env["DOCSOC_SMTP_PORT"])
+            : 587,
+        process.env["DOCSOC_OUTLOOK_USERNAME"] ?? "docsoc@ic.ac.uk",
+        tenantId,
+        clientId,
+    );
+};
 
 /**
  * Get the default RFC5322 from line for DoCSoc emails, using the env vars `DOCSOC_SENDER_NAME` and `DOCSOC_SENDER_EMAIL`.
@@ -47,7 +79,7 @@ export const defaultMailer = (
     to: EmailString[],
     subject: string,
     html: string,
-    mailer: Mailer,
+    mailer: MailerInterface,
     attachments: Mail.Options["attachments"] = [],
     additionalInfo: { cc: EmailString[]; bcc: EmailString[] } = { cc: [], bcc: [] },
 ): Promise<void> =>

@@ -1,7 +1,7 @@
 import readlineSync from "readline-sync";
 
 import { TemplateEngineConstructor, TemplateEngine } from "../engines/types";
-import Mailer from "../mailer/mailer";
+import type { Mailer } from "../mailer/types";
 import { sendEmails } from "./send";
 import { StorageBackend, MergeResultWithMetadata } from "./storage/types";
 
@@ -31,7 +31,6 @@ describe("sendEmails", () => {
             postSendAction: jest.fn().mockResolvedValue(undefined),
         };
 
-        /// @ts-expect-error: Mocking mailer
         mockMailer = {
             sendMail: jest.fn().mockResolvedValue(undefined),
         };

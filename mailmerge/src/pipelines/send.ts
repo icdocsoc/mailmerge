@@ -6,9 +6,9 @@ import readlineSync from "readline-sync";
 
 import { ENGINES_MAP } from "../engines/index.js";
 import { TemplateEngineConstructor } from "../engines/types.js";
-import Mailer from "../mailer/mailer.js";
 import { InlineImagesSpec, loadInlineImageJSON } from "../util/inline-images.js";
 import { EmailString, FromEmail } from "../util/types.js";
+import type { Mailer } from "../mailer/types.js";
 import { StorageBackend, MergeResultWithMetadata, PostSendActionMode } from "./storage/types.js";
 
 interface SendEmailsOptions {
