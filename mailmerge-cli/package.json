@@ -1,12 +1,12 @@
 {
     "name": "@docsoc/mailmerge-cli",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "@docsoc/mailmerge": "^2.0.1",
-        "@docsoc/util": "^2.0.1",
+        "@docsoc/mailmerge": "^2.0.2",
+        "@docsoc/util": "^2.0.2",
         "@oclif/core": "^4.0.17",
         "inquirer": "^10.1.6",
         "mkdirp": "^3.0.1",
@@ -33,7 +33,10 @@
         "./src/*.d.ts",
         "./index.js",
         "./index.d.ts",
-        "./bin/run.js"
+        "./bin/run.js",
+        "./bin/run.cmd",
+        "./assets/**/*",
+        "./assets/**/.env"
     ],
     "bin": {
         "docsoc-mailmerge": "./bin/run.js"

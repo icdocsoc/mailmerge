@@ -1,5 +1,11 @@
 # @docsoc/util
 
+## 2.0.2
+
+### Patch Changes
+
+-   Fix issue where mailmerge CLI didn;t bundle assets
+
 ## 2.0.1
 
 ### Patch Changes
