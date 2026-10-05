@@ -27,8 +27,8 @@ interface UploadDraftsOptions {
  * NOTE: THis will initiate an interactive OAuth2 flow to authenticate with Microsoft Graph. This will open a browser to be opened.
  * @param storageBackend Storage backend to get mail merge results from
  * @param enginesMap Map of engine names to engine constructors, as we need to ask the engine what the HTML is to send from the result
- * @param entraTenantId The tenant ID for the Microsoft Graph API to authenticate with (taken from process.env.MS_ENTRA_TENANT_ID)
- * @param entraClientId The client ID for the Microsoft Graph API to authenticate with (taken from process.env.MS_ENTRA_CLIENT_ID)
+ * @param entraTenantId The tenant ID for the Microsoft Graph API to authenticate with (taken from process.env.DOCSOC_MS_ENTRA_TENANT_ID)
+ * @param entraClientId The client ID for the Microsoft Graph API to authenticate with (taken from process.env.DOCSOC_MS_ENTRA_CLIENT_ID)
  * @param disablePrompt If true, will not prompt the user before uploading emails. Defaults to false (will prompt)
  * @param expectedEmail The email address to expect the emails to be sent to. If the email address of the account signed into does not match, the email will not be uploaded.
  * @param sleepBetween Time to sleep in seconds between uploading emails to prevent hitting rate limits
@@ -41,8 +41,8 @@ export async function uploadDrafts(
     options: UploadDraftsOptions = {
         sleepBetween: 0,
     },
-    entraTenantId = process.env["MS_ENTRA_TENANT_ID"],
-    entraClientId = process.env["MS_ENTRA_CLIENT_ID"],
+    entraTenantId = process.env["DOCSOC_MS_ENTRA_TENANT_ID"],
+    entraClientId = process.env["DOCSOC_MS_ENTRA_CLIENT_ID"],
     expectedEmail = "docsoc@ic.ac.uk",
     logger = createLogger("docsoc"),
 ) {

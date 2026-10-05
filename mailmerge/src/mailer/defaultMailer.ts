@@ -27,18 +27,18 @@ export const getDefaultMailer = () =>
  * - `DOCSOC_SMTP_SERVER`
  * - `DOCSOC_SMTP_PORT`
  * - `DOCSOC_OUTLOOK_USERNAME`
- * - `MS_ENTRA_TENANT_ID`
- * - `MS_ENTRA_CLIENT_ID`
+ * - `DOCSOC_MS_ENTRA_TENANT_ID`
+ * - `DOCSOC_MS_ENTRA_CLIENT_ID`
  */
 export const getDefaultOAuthMailer = () => {
-    const tenantId = process.env["MS_ENTRA_TENANT_ID"];
-    const clientId = process.env["MS_ENTRA_CLIENT_ID"];
+    const tenantId = process.env["DOCSOC_MS_ENTRA_TENANT_ID"];
+    const clientId = process.env["DOCSOC_MS_ENTRA_CLIENT_ID"];
 
     if (!tenantId) {
-        throw new Error("MS_ENTRA_TENANT_ID is required for OAuth SMTP mailer.");
+        throw new Error("DOCSOC_MS_ENTRA_TENANT_ID is required for OAuth SMTP mailer.");
     }
     if (!clientId) {
-        throw new Error("MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.");
+        throw new Error("DOCSOC_MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.");
     }
 
     return new OAuthMailer(

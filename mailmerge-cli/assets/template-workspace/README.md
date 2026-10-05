@@ -57,7 +57,7 @@ DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 # And grant it the following permissions:
 # - Mail.ReadWrite
 # - User.Read
-MS_ENTRA_CLIENT_ID=
-MS_ENTRA_CLIENT_SECRET=
-MS_ENTRA_TENANT_ID=
+DOCSOC_MS_ENTRA_CLIENT_ID=
+DOCSOC_MS_ENTRA_CLIENT_SECRET=
+DOCSOC_MS_ENTRA_TENANT_ID=
 ```
