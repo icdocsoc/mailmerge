@@ -91,8 +91,8 @@ DOCSOC_OUTLOOK_USERNAME=
 DOCSOC_OUTLOOK_PASSWORD=
 
 # Option: set these if logging in as someone other than docsoc@ic.ac.uk or sending as someone else
-# DOCSOC_SENDER_NAME=DoCSoc
-# DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
+DOCSOC_SENDER_NAME=DoCSoc
+DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 
 # Fill these into upload drafts emails and/or send using SMTP OAuth instead of password SMTP Login
 # You will need to create an app registration in Entra ID, restricted to the organisation,
@@ -100,6 +100,8 @@ DOCSOC_OUTLOOK_PASSWORD=
 # - Mail.ReadWrite
 # - User.Read
 # - SMTP.Send
+# NOTE: when sending with --oauth, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
+# otherwise mailmerge will print an error and refuse to send.
 DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
 DOCSOC_MS_ENTRA_TENANT_ID=

@@ -58,6 +58,8 @@ DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 # - Mail.ReadWrite
 # - User.Read
 # - SMTP.Send
+# NOTE: when sending with --oauth, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
+# otherwise mailmerge will print an error and refuse to send.
 DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
 DOCSOC_MS_ENTRA_TENANT_ID=
