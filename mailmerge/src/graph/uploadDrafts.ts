@@ -6,7 +6,7 @@ import cliProgress from "cli-progress";
 import fs from "fs/promises";
 import { basename } from "path";
 
-import { EmailString } from "../util/types.js";
+import { DraftUploader, EmailString } from "../util/types.js";
 
 export interface ImapConfig {
     host: string;
@@ -24,7 +24,7 @@ const UPLOAD_ATTACHMENT_CHUNK_SIZE = 4 * 1024 * 1024;
  *
  * NOTE: This will trigger a browser window to open for OAuth authentication.
  */
-export class EmailUploader {
+export class EmailUploader implements DraftUploader {
     private client?: Client;
 
     constructor(private logger = createLogger("graph")) {}
@@ -207,7 +207,7 @@ export class EmailUploader {
              * gives the illusion of a blank line betwee them)
              */
             enableOutlookParagraphSpacingHack?: boolean;
-        },
+        } = {},
     ) {
         if (!this.client) {
             throw new Error("Client not authenticated");

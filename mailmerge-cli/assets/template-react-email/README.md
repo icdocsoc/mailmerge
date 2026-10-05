@@ -91,15 +91,42 @@ DOCSOC_OUTLOOK_USERNAME=
 DOCSOC_OUTLOOK_PASSWORD=
 
 # Option: set these if logging in as someone other than docsoc@ic.ac.uk or sending as someone else
-# DOCSOC_SENDER_NAME=DoCSoc
-# DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
+DOCSOC_SENDER_NAME=DoCSoc
+DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 
-# Optional: Fill these in to uplod drafts
+# Fill these into upload drafts emails and/or send using SMTP OAuth instead of password SMTP Login
 # You will need to create an app registration in Entra ID, restricted to the organisation,
 # And grant it the following permissions:
 # - Mail.ReadWrite
 # - User.Read
-MS_ENTRA_CLIENT_ID=
-MS_ENTRA_CLIENT_SECRET=
-MS_ENTRA_TENANT_ID=
+# - SMTP.Send
+# NOTE: when sending with --oauth=<provider>, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
+# otherwise mailmerge will print an error and refuse to send.
+DOCSOC_MS_ENTRA_CLIENT_ID=
+DOCSOC_MS_ENTRA_CLIENT_SECRET=
+DOCSOC_MS_ENTRA_TENANT_ID=
 ```
+
+## Sending emails
+`mailmerge` can send emails using either SMTP or Microsoft Graph API (via OAuth). The default is SMTP, but if you want to use OAuth, fill in the `DOCSOC_MS_ENTRA_CLIENT_ID`, `DOCSOC_MS_ENTRA_CLIENT_SECRET`, and `DOCSOC_MS_ENTRA_TENANT_ID` fields in the `.env` file. You will need to create an app registration in Entra ID and grant it the following permissions:
+- Mail.ReadWrite
+- User.Read
+- SMTP.Send
+
+Finally, when sending pass the `--oauth=microsoft` flag to the `send` command:
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth=microsoft
+```
+
+> As a safety catch, the Microsoft account you sign in to when authenticating via OAuth **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.
+
+### Gmail OAuth
+
+You can instead send (and upload drafts) via Gmail using Google OAuth. Create an **OAuth client of type "Desktop app"** in the [Google Cloud console](https://console.cloud.google.com/) with the **Gmail API enabled**, download the credentials JSON, and set `DOCSOC_GOOGLE_CREDENTIALS_FILE` to its path. Then:
+
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth=google
+docsoc-mailmerge upload-drafts ./output/<runname> --provider=google
+```
+
+On first use a browser opens and a local server catches the OAuth redirect. The scope `https://mail.google.com/` is required for SMTP. The same safety catch applies: the Google account you sign in to **must match** `DOCSOC_SENDER_EMAIL`.

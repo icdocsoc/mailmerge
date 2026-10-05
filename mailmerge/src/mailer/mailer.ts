@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
 
 import { EmailString, FromEmail } from "../util/types.js";
+import type { Mailer as MailerInterface } from "./types.js";
 
 /**
  * Core abstraction for sending emails: make a instance of this class, and call `sendMail` to send an email.
@@ -16,7 +17,7 @@ import { EmailString, FromEmail } from "../util/types.js";
  * @param username SMTP server username (usually your microsoft 365 email)
  * @param password SMTP server password (usually your microsoft 365 password)
  */
-export default class Mailer {
+export default class Mailer implements MailerInterface {
     constructor(
         private smtpHost: string,
         private smtpPort: number,

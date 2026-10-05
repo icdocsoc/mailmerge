@@ -5,8 +5,10 @@ import "dotenv/config";
 import readlineSync from "readline-sync";
 
 import { TemplateEngineConstructor, ENGINES_MAP } from "../engines/index.js";
+import { GmailDraftUploader } from "../google/index.js";
 import { EmailUploader } from "../graph/index.js";
-import { EmailString } from "../util/index.js";
+import { getDefaultSenderEmail } from "../mailer/index.js";
+import { DraftUploader, EmailString } from "../util/index.js";
 import { InlineImagesSpec, loadInlineImageJSON } from "../util/inline-images.js";
 import { StorageBackend, MergeResultWithMetadata, PostSendActionMode } from "./storage/index.js";
 
@@ -17,21 +19,31 @@ interface UploadDraftsOptions {
     onlySend?: number;
     /** Path to JSON file conforming to a {@link InlineImagesSpec} with files to attach for use as inline images. */
     inlineImages?: string;
+    /** OAuth provider to upload drafts with. Defaults to "microsoft" (Outlook via Microsoft Graph). */
+    provider?: "microsoft" | "google";
+    /**
+     * Path to the Google OAuth client credentials JSON, used when `provider` is "google".
+     * Defaults to `process.env.DOCSOC_GOOGLE_CREDENTIALS_FILE`.
+     */
+    googleCredentialsFile?: string;
 }
 
 /**
- * Upload mail merge results to drafts of an inbox using the Microsoft graph API
+ * Upload mail merge results to the Drafts folder of an inbox via OAuth.
+ *
+ * The provider is chosen via `options.provider`: "microsoft" (default) uploads to Outlook via the
+ * Microsoft Graph API, "google" uploads to Gmail via the Gmail API.
  *
  * NOTE: This function will prompt the user before sending emails, unless `disablePrompt` is set to true. SO make sure it is set to true if you want to do a fully headless send.
  *
- * NOTE: THis will initiate an interactive OAuth2 flow to authenticate with Microsoft Graph. This will open a browser to be opened.
+ * NOTE: THis will initiate an interactive OAuth2 flow to authenticate with the chosen provider. This will open a browser to be opened.
  * @param storageBackend Storage backend to get mail merge results from
  * @param enginesMap Map of engine names to engine constructors, as we need to ask the engine what the HTML is to send from the result
- * @param entraTenantId The tenant ID for the Microsoft Graph API to authenticate with (taken from process.env.MS_ENTRA_TENANT_ID)
- * @param entraClientId The client ID for the Microsoft Graph API to authenticate with (taken from process.env.MS_ENTRA_CLIENT_ID)
  * @param disablePrompt If true, will not prompt the user before uploading emails. Defaults to false (will prompt)
- * @param expectedEmail The email address to expect the emails to be sent to. If the email address of the account signed into does not match, the email will not be uploaded.
- * @param sleepBetween Time to sleep in seconds between uploading emails to prevent hitting rate limits
+ * @param options Upload options, including `provider` and provider-specific credentials (see {@link UploadDraftsOptions})
+ * @param entraTenantId The tenant ID for the Microsoft Graph API to authenticate with (taken from process.env.DOCSOC_MS_ENTRA_TENANT_ID). Only used for the "microsoft" provider.
+ * @param entraClientId The client ID for the Microsoft Graph API to authenticate with (taken from process.env.DOCSOC_MS_ENTRA_CLIENT_ID). Only used for the "microsoft" provider.
+ * @param expectedEmail The sender address the signed-in account must match; if it does not, nothing is uploaded. Defaults to `DOCSOC_SENDER_EMAIL` (see {@link getDefaultSenderEmail}).
  * @param logger Logger to use for logging
  */
 export async function uploadDrafts(
@@ -41,12 +53,17 @@ export async function uploadDrafts(
     options: UploadDraftsOptions = {
         sleepBetween: 0,
     },
-    entraTenantId = process.env["MS_ENTRA_TENANT_ID"],
-    entraClientId = process.env["MS_ENTRA_CLIENT_ID"],
-    expectedEmail = "docsoc@ic.ac.uk",
+    entraTenantId = process.env["DOCSOC_MS_ENTRA_TENANT_ID"],
+    entraClientId = process.env["DOCSOC_MS_ENTRA_CLIENT_ID"],
+    expectedEmail = getDefaultSenderEmail(),
     logger = createLogger("docsoc"),
 ) {
-    const { sleepBetween = 0, onlySend } = options;
+    const {
+        sleepBetween = 0,
+        onlySend,
+        provider = "microsoft",
+        googleCredentialsFile = process.env["DOCSOC_GOOGLE_CREDENTIALS_FILE"],
+    } = options;
 
     if (onlySend === 0) {
         logger.warn(`onlySend is set to 0, so no emails will be sent.`);
@@ -137,8 +154,16 @@ export async function uploadDrafts(
     }
     const total = pendingEmails.length;
     let sent = 0;
-    const uploader = new EmailUploader(logger);
-    await uploader.authenticate(expectedEmail, entraTenantId, entraClientId);
+    let uploader: DraftUploader;
+    if (provider === "google") {
+        const gmailUploader = new GmailDraftUploader(logger);
+        await gmailUploader.authenticate(expectedEmail, googleCredentialsFile);
+        uploader = gmailUploader;
+    } else {
+        const graphUploader = new EmailUploader(logger);
+        await graphUploader.authenticate(expectedEmail, entraTenantId, entraClientId);
+        uploader = graphUploader;
+    }
     for (const { to, subject, html, attachments, cc, bcc, originalResult } of pendingEmails) {
         logger.info(
             `(${++sent} / ${total}) Uploading email to ${to} with subject ${subject} to Drafts...`,
