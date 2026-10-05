@@ -62,3 +62,5 @@ DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
 DOCSOC_MS_ENTRA_TENANT_ID=
 ```
+
+> As a safety catch, when sending with OAuth (`docsoc-mailmerge send ./output/<runname> --oauth`) the Microsoft account you sign in to **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.

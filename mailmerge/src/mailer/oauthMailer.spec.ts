@@ -9,6 +9,15 @@ jest.mock("@azure/identity", () => ({
     InteractiveBrowserCredential: jest.fn(),
 }));
 
+jest.mock("@docsoc/util", () => ({
+    createLogger: jest.fn().mockReturnValue({
+        info: jest.fn(),
+        debug: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+    }),
+}));
+
 jest.mock("nodemailer", () => ({
     __esModule: true,
     default: {
@@ -24,10 +33,12 @@ const SMTP_OAUTH_SCOPE = "https://outlook.office.com/SMTP.Send";
 
 describe("OAuthMailer", () => {
     let mockGetToken: jest.Mock;
+    let mockAuthenticate: jest.Mock;
     let mockSendMail: jest.Mock;
     let nowSpy: jest.SpyInstance;
     let currentTime: number;
 
+    const SENDER_EMAIL = "user@example.com";
     const from: FromEmail = '"From" <from@example.com>';
     const to = ["recipient@example.com"];
     const cc: EmailString[] = ["cc@example.com"];
@@ -35,7 +46,14 @@ describe("OAuthMailer", () => {
 
     /** Build a mailer with sensible defaults for the tests. */
     const makeMailer = () =>
-        new OAuthMailer("smtp.example.com", 587, "user@example.com", "tenant-id", "client-id");
+        new OAuthMailer(
+            "smtp.example.com",
+            587,
+            "user@example.com",
+            SENDER_EMAIL,
+            "tenant-id",
+            "client-id",
+        );
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -48,8 +66,11 @@ describe("OAuthMailer", () => {
             token: "access-token",
             expiresOnTimestamp: currentTime + 60 * 60 * 1000, // 1 hour in the future
         });
+        // By default the signed-in account matches the configured sender.
+        mockAuthenticate = jest.fn().mockResolvedValue({ username: SENDER_EMAIL });
         (InteractiveBrowserCredential as jest.Mock).mockImplementation(() => ({
             getToken: mockGetToken,
+            authenticate: mockAuthenticate,
         }));
 
         mockSendMail = jest.fn().mockResolvedValue(undefined);
@@ -154,6 +175,58 @@ describe("OAuthMailer", () => {
             ).rejects.toThrow("Failed to acquire OAuth access token for SMTP.Send.");
 
             expect(nodemailer.createTransport).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("sender identity verification", () => {
+        it("authenticates and allows sending when the signed-in account matches the sender", async () => {
+            const mailer = makeMailer();
+
+            await mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] });
+
+            expect(mockAuthenticate).toHaveBeenCalledWith([SMTP_OAUTH_SCOPE]);
+            expect(mockSendMail).toHaveBeenCalled();
+        });
+
+        it("matches the sender email case-insensitively", async () => {
+            mockAuthenticate.mockResolvedValue({ username: "USER@Example.com" });
+            const mailer = makeMailer();
+
+            await expect(
+                mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] }),
+            ).resolves.toBeUndefined();
+        });
+
+        it("throws and does not send if the signed-in account does not match the sender", async () => {
+            mockAuthenticate.mockResolvedValue({ username: "someone-else@example.com" });
+            const mailer = makeMailer();
+
+            await expect(
+                mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] }),
+            ).rejects.toThrow(
+                /does not match the configured sender email "user@example.com" \(DOCSOC_SENDER_EMAIL\)/,
+            );
+
+            expect(mockGetToken).not.toHaveBeenCalled();
+            expect(nodemailer.createTransport).not.toHaveBeenCalled();
+        });
+
+        it("throws if authentication returns no account record", async () => {
+            mockAuthenticate.mockResolvedValue(undefined);
+            const mailer = makeMailer();
+
+            await expect(
+                mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] }),
+            ).rejects.toThrow("Failed to authenticate with Microsoft OAuth for SMTP.Send.");
+        });
+
+        it("only verifies the signed-in account once across multiple sends", async () => {
+            const mailer = makeMailer();
+
+            await mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] });
+            await mailer.sendMail(from, to, "Subject", "<p>Hello</p>", [], { cc: [], bcc: [] });
+
+            expect(mockAuthenticate).toHaveBeenCalledTimes(1);
         });
     });
 

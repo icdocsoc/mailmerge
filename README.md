@@ -114,6 +114,9 @@ Finally, when sending pass the `--oauth` flag to the `send` command:
 docsoc-mailmerge send ./output/<runname> --oauth
 ```
 
+>[!important]
+> As a safety catch, the Microsoft account you sign in to when authenticating via OAuth **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.
+
 
 ## Advanced Features
 

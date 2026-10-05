@@ -13,6 +13,7 @@ describe("getDefaultOAuthMailer", () => {
         delete process.env["DOCSOC_SMTP_SERVER"];
         delete process.env["DOCSOC_SMTP_PORT"];
         delete process.env["DOCSOC_OUTLOOK_USERNAME"];
+        delete process.env["DOCSOC_SENDER_EMAIL"];
         delete process.env["DOCSOC_MS_ENTRA_TENANT_ID"];
         delete process.env["DOCSOC_MS_ENTRA_CLIENT_ID"];
     });
@@ -25,6 +26,7 @@ describe("getDefaultOAuthMailer", () => {
         process.env["DOCSOC_SMTP_SERVER"] = "smtp.example.com";
         process.env["DOCSOC_SMTP_PORT"] = "2525";
         process.env["DOCSOC_OUTLOOK_USERNAME"] = "user@example.com";
+        process.env["DOCSOC_SENDER_EMAIL"] = "sender@example.com";
         process.env["DOCSOC_MS_ENTRA_TENANT_ID"] = "tenant-id";
         process.env["DOCSOC_MS_ENTRA_CLIENT_ID"] = "client-id";
 
@@ -34,12 +36,13 @@ describe("getDefaultOAuthMailer", () => {
             "smtp.example.com",
             2525,
             "user@example.com",
+            "sender@example.com",
             "tenant-id",
             "client-id",
         );
     });
 
-    it("falls back to sensible defaults for server, port and username", () => {
+    it("falls back to sensible defaults for server, port, username and sender email", () => {
         process.env["DOCSOC_MS_ENTRA_TENANT_ID"] = "tenant-id";
         process.env["DOCSOC_MS_ENTRA_CLIENT_ID"] = "client-id";
 
@@ -48,6 +51,24 @@ describe("getDefaultOAuthMailer", () => {
         expect(OAuthMailer).toHaveBeenCalledWith(
             "smtp-mail.outlook.com",
             587,
+            "docsoc@ic.ac.uk",
+            "docsoc@ic.ac.uk",
+            "tenant-id",
+            "client-id",
+        );
+    });
+
+    it("falls back to the default sender email when DOCSOC_SENDER_EMAIL is invalid", () => {
+        process.env["DOCSOC_SENDER_EMAIL"] = "not-an-email";
+        process.env["DOCSOC_MS_ENTRA_TENANT_ID"] = "tenant-id";
+        process.env["DOCSOC_MS_ENTRA_CLIENT_ID"] = "client-id";
+
+        getDefaultOAuthMailer();
+
+        expect(OAuthMailer).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.anything(),
+            expect.anything(),
             "docsoc@ic.ac.uk",
             "tenant-id",
             "client-id",
@@ -64,6 +85,7 @@ describe("getDefaultOAuthMailer", () => {
         expect(OAuthMailer).toHaveBeenCalledWith(
             expect.anything(),
             587,
+            expect.anything(),
             expect.anything(),
             "tenant-id",
             "client-id",

@@ -27,8 +27,12 @@ export const getDefaultMailer = () =>
  * - `DOCSOC_SMTP_SERVER`
  * - `DOCSOC_SMTP_PORT`
  * - `DOCSOC_OUTLOOK_USERNAME`
+ * - `DOCSOC_SENDER_EMAIL`
  * - `DOCSOC_MS_ENTRA_TENANT_ID`
  * - `DOCSOC_MS_ENTRA_CLIENT_ID`
+ *
+ * As a safety catch, the mailer verifies that the account signed in to via OAuth matches
+ * `DOCSOC_SENDER_EMAIL` (the address emails are sent from), throwing if they differ.
  */
 export const getDefaultOAuthMailer = () => {
     const tenantId = process.env["DOCSOC_MS_ENTRA_TENANT_ID"];
@@ -41,12 +45,17 @@ export const getDefaultOAuthMailer = () => {
         throw new Error("DOCSOC_MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.");
     }
 
+    const senderEmail = Mailer.validateEmail(process.env["DOCSOC_SENDER_EMAIL"])
+        ? process.env["DOCSOC_SENDER_EMAIL"] ?? "docsoc@ic.ac.uk"
+        : "docsoc@ic.ac.uk";
+
     return new OAuthMailer(
         process.env["DOCSOC_SMTP_SERVER"] ?? "smtp-mail.outlook.com",
         process.env["DOCSOC_SMTP_PORT"] && isFinite(parseInt(process.env["DOCSOC_SMTP_PORT"]))
             ? parseInt(process.env["DOCSOC_SMTP_PORT"])
             : 587,
         process.env["DOCSOC_OUTLOOK_USERNAME"] ?? "docsoc@ic.ac.uk",
+        senderEmail,
         tenantId,
         clientId,
     );
