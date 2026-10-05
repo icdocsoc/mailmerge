@@ -2,6 +2,7 @@ import {
     JSONSidecarsBackend,
     sendEmails,
     getDefaultMailer,
+    getDefaultOAuthMailer,
     getDefaultDoCSocFromLine,
     ENGINES_MAP,
     EmailString,
@@ -44,6 +45,12 @@ export default class Send extends Command {
             description:
                 "Path to a JSON file containing informationa about inline images - see InlineImagesSpec type for format",
         }),
+        oauth: Flags.boolean({
+            char: "o",
+            description:
+                "Authenticate with Microsoft OAuth (XOAUTH2) instead of a password. Requires the DOCSOC_MS_ENTRA_TENANT_ID and DOCSOC_MS_ENTRA_CLIENT_ID env vars",
+            default: false,
+        }),
     };
 
     public async run(): Promise<void> {
@@ -73,7 +80,7 @@ export default class Send extends Command {
         // Rerender previews
         await sendEmails(
             storageBackend,
-            getDefaultMailer(),
+            flags.oauth ? getDefaultOAuthMailer() : getDefaultMailer(),
             getDefaultDoCSocFromLine(),
             ENGINES_MAP,
             flags.yes,
