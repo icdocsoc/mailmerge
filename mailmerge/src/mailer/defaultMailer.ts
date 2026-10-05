@@ -5,20 +5,49 @@
 import Mail from "nodemailer/lib/mailer";
 
 import { EmailString } from "../util/types.js";
+import GmailOAuthMailer from "./gmailOAuthMailer.js";
 import Mailer from "./mailer.js";
 import OAuthMailer from "./oauthMailer.js";
 import type { Mailer as MailerInterface } from "./types.js";
+
+/** The fallback sender/mailbox address used when the relevant env var is unset or invalid. */
+export const DEFAULT_DOCSOC_EMAIL = "docsoc@ic.ac.uk";
+
+/**
+ * Resolve the default SMTP host for Outlook/Microsoft from `DOCSOC_SMTP_SERVER`,
+ * falling back to `smtp-mail.outlook.com`.
+ */
+export const getDefaultSmtpHost = (): string =>
+    process.env["DOCSOC_SMTP_SERVER"] ?? "smtp-mail.outlook.com";
+
+/**
+ * Resolve the SMTP port from `DOCSOC_SMTP_PORT`, falling back to 587 when unset or non-numeric.
+ */
+export const getDefaultSmtpPort = (): number =>
+    process.env["DOCSOC_SMTP_PORT"] && isFinite(parseInt(process.env["DOCSOC_SMTP_PORT"]))
+        ? parseInt(process.env["DOCSOC_SMTP_PORT"])
+        : 587;
+
+/**
+ * Resolve the sender email address from `DOCSOC_SENDER_EMAIL`, falling back to
+ * {@link DEFAULT_DOCSOC_EMAIL} when unset or invalid.
+ *
+ * This is the address emails are sent from, and the account OAuth mailers verify the signed-in
+ * user against.
+ */
+export const getDefaultSenderEmail = (): EmailString =>
+    Mailer.validateEmail(process.env["DOCSOC_SENDER_EMAIL"])
+        ? process.env["DOCSOC_SENDER_EMAIL"]
+        : DEFAULT_DOCSOC_EMAIL;
 
 /**
  * Default mailer that uses the env vars `DOCSOC_SMTP_SERVER`, `DOCSOC_SMTP_USERNAME`, `DOCSOC_SMTP_PASSWORD` to create a mailer.
  */
 export const getDefaultMailer = () =>
     new Mailer(
-        process.env["DOCSOC_SMTP_SERVER"] ?? "smtp-mail.outlook.com",
-        process.env["DOCSOC_SMTP_PORT"] && isFinite(parseInt(process.env["DOCSOC_SMTP_PORT"]))
-            ? parseInt(process.env["DOCSOC_SMTP_PORT"])
-            : 587,
-        process.env["DOCSOC_OUTLOOK_USERNAME"] ?? "docsoc@ic.ac.uk",
+        getDefaultSmtpHost(),
+        getDefaultSmtpPort(),
+        process.env["DOCSOC_OUTLOOK_USERNAME"] ?? DEFAULT_DOCSOC_EMAIL,
         process.env["DOCSOC_OUTLOOK_PASSWORD"] ?? "password",
     );
 
@@ -45,19 +74,42 @@ export const getDefaultOAuthMailer = () => {
         throw new Error("DOCSOC_MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.");
     }
 
-    const senderEmail = Mailer.validateEmail(process.env["DOCSOC_SENDER_EMAIL"])
-        ? process.env["DOCSOC_SENDER_EMAIL"] ?? "docsoc@ic.ac.uk"
-        : "docsoc@ic.ac.uk";
-
     return new OAuthMailer(
-        process.env["DOCSOC_SMTP_SERVER"] ?? "smtp-mail.outlook.com",
-        process.env["DOCSOC_SMTP_PORT"] && isFinite(parseInt(process.env["DOCSOC_SMTP_PORT"]))
-            ? parseInt(process.env["DOCSOC_SMTP_PORT"])
-            : 587,
-        process.env["DOCSOC_OUTLOOK_USERNAME"] ?? "docsoc@ic.ac.uk",
-        senderEmail,
+        getDefaultSmtpHost(),
+        getDefaultSmtpPort(),
+        process.env["DOCSOC_OUTLOOK_USERNAME"] ?? DEFAULT_DOCSOC_EMAIL,
+        getDefaultSenderEmail(),
         tenantId,
         clientId,
+    );
+};
+
+/**
+ * Default Gmail OAuth SMTP mailer that uses:
+ * - `DOCSOC_SMTP_PORT` (defaults to 587)
+ * - `DOCSOC_SENDER_EMAIL` (also used as the SMTP username, as Gmail sends as the authenticated account)
+ * - `DOCSOC_GOOGLE_CREDENTIALS_FILE` (path to the downloaded Google OAuth client credentials JSON)
+ *
+ * The SMTP host is always `smtp.gmail.com`.
+ *
+ * As a safety catch, the mailer verifies that the Google account signed in to via OAuth matches
+ * `DOCSOC_SENDER_EMAIL` (the address emails are sent from), throwing if they differ.
+ */
+export const getDefaultGmailOAuthMailer = () => {
+    const credentialsFile = process.env["DOCSOC_GOOGLE_CREDENTIALS_FILE"];
+
+    if (!credentialsFile) {
+        throw new Error("DOCSOC_GOOGLE_CREDENTIALS_FILE is required for Gmail OAuth mailer.");
+    }
+
+    const senderEmail = getDefaultSenderEmail();
+
+    return new GmailOAuthMailer(
+        "smtp.gmail.com",
+        getDefaultSmtpPort(),
+        senderEmail,
+        senderEmail,
+        credentialsFile,
     );
 };
 
@@ -69,9 +121,7 @@ export const getDefaultOAuthMailer = () => {
 export const getDefaultDoCSocFromLine = () =>
     Mailer.makeFromLineFromEmail(
         process.env["DOCSOC_SENDER_NAME"] ?? "DoCSoc",
-        Mailer.validateEmail(process.env["DOCSOC_SENDER_EMAIL"])
-            ? process.env["DOCSOC_SENDER_EMAIL"] ?? "docsoc@ic.ac.uk"
-            : "docsoc@ic.ac.uk",
+        getDefaultSenderEmail(),
     );
 
 /**

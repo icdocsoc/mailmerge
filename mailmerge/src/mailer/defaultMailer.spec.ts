@@ -1,7 +1,9 @@
-import { getDefaultOAuthMailer } from "./defaultMailer";
+import { getDefaultGmailOAuthMailer, getDefaultOAuthMailer } from "./defaultMailer";
+import GmailOAuthMailer from "./gmailOAuthMailer";
 import OAuthMailer from "./oauthMailer";
 
 jest.mock("./oauthMailer");
+jest.mock("./gmailOAuthMailer");
 
 describe("getDefaultOAuthMailer", () => {
     const OLD_ENV = process.env;
@@ -108,5 +110,61 @@ describe("getDefaultOAuthMailer", () => {
             "DOCSOC_MS_ENTRA_CLIENT_ID is required for OAuth SMTP mailer.",
         );
         expect(OAuthMailer).not.toHaveBeenCalled();
+    });
+});
+
+describe("getDefaultGmailOAuthMailer", () => {
+    const OLD_ENV = process.env;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        process.env = { ...OLD_ENV };
+        delete process.env["DOCSOC_SMTP_PORT"];
+        delete process.env["DOCSOC_SENDER_EMAIL"];
+        delete process.env["DOCSOC_GOOGLE_CREDENTIALS_FILE"];
+    });
+
+    afterAll(() => {
+        process.env = OLD_ENV;
+    });
+
+    it("constructs a GmailOAuthMailer from DOCSOC_GOOGLE_CREDENTIALS_FILE and the sender email", () => {
+        process.env["DOCSOC_SMTP_PORT"] = "2525";
+        process.env["DOCSOC_SENDER_EMAIL"] = "sender@example.com";
+        process.env["DOCSOC_GOOGLE_CREDENTIALS_FILE"] = "./google-creds.json";
+
+        getDefaultGmailOAuthMailer();
+
+        // host, port, username (= sender), sender, keyfile
+        expect(GmailOAuthMailer).toHaveBeenCalledWith(
+            "smtp.gmail.com",
+            2525,
+            "sender@example.com",
+            "sender@example.com",
+            "./google-creds.json",
+        );
+    });
+
+    it("falls back to port 587 and the default sender email", () => {
+        process.env["DOCSOC_GOOGLE_CREDENTIALS_FILE"] = "./google-creds.json";
+
+        getDefaultGmailOAuthMailer();
+
+        expect(GmailOAuthMailer).toHaveBeenCalledWith(
+            "smtp.gmail.com",
+            587,
+            "docsoc@ic.ac.uk",
+            "docsoc@ic.ac.uk",
+            "./google-creds.json",
+        );
+    });
+
+    it("throws if DOCSOC_GOOGLE_CREDENTIALS_FILE is missing", () => {
+        process.env["DOCSOC_SENDER_EMAIL"] = "sender@example.com";
+
+        expect(() => getDefaultGmailOAuthMailer()).toThrow(
+            "DOCSOC_GOOGLE_CREDENTIALS_FILE is required for Gmail OAuth mailer.",
+        );
+        expect(GmailOAuthMailer).not.toHaveBeenCalled();
     });
 });

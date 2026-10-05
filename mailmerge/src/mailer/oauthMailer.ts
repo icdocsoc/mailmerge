@@ -1,11 +1,7 @@
 import { InteractiveBrowserCredential } from "@azure/identity";
 import { createLogger } from "@docsoc/util";
-import { convert } from "html-to-text";
-import nodemailer from "nodemailer";
-import Mail from "nodemailer/lib/mailer";
 
-import { EmailString, FromEmail } from "../util/types.js";
-import type { Mailer as MailerInterface } from "./types.js";
+import OAuthSmtpMailer from "./oauthSmtpMailer.js";
 
 const SMTP_OAUTH_SCOPE = "https://outlook.office.com/SMTP.Send";
 
@@ -14,7 +10,7 @@ const logger = createLogger("docsoc.mailer.oauth");
 /**
  * SMTP mailer that authenticates via Microsoft OAuth (XOAUTH2).
  */
-export default class OAuthMailer implements MailerInterface {
+export default class OAuthMailer extends OAuthSmtpMailer {
     private credential: InteractiveBrowserCredential;
     private cachedAccessToken?: {
         token: string;
@@ -23,13 +19,14 @@ export default class OAuthMailer implements MailerInterface {
     private identityVerified = false;
 
     constructor(
-        private smtpHost: string,
-        private smtpPort: number,
-        private username: string,
+        smtpHost: string,
+        smtpPort: number,
+        username: string,
         private senderEmail: string,
         tenantId: string,
         clientId: string,
     ) {
+        super(smtpHost, smtpPort, username);
         this.credential = new InteractiveBrowserCredential({
             tenantId,
             clientId,
@@ -64,7 +61,7 @@ export default class OAuthMailer implements MailerInterface {
         this.identityVerified = true;
     }
 
-    private async getAccessToken(): Promise<string> {
+    protected async getAccessToken(): Promise<string> {
         const now = Date.now();
         const refreshSkewMs = 60 * 1000;
 
@@ -90,39 +87,5 @@ export default class OAuthMailer implements MailerInterface {
         };
 
         return token.token;
-    }
-
-    async sendMail(
-        from: FromEmail,
-        to: string[],
-        subject: string,
-        html: string,
-        attachments: Mail.Options["attachments"] = [],
-        additionalInfo: { cc: EmailString[]; bcc: EmailString[] } = { cc: [], bcc: [] },
-        text: string = convert(html),
-    ): Promise<void> {
-        const accessToken = await this.getAccessToken();
-
-        const transporter = nodemailer.createTransport({
-            host: this.smtpHost,
-            port: this.smtpPort,
-            secure: false,
-            auth: {
-                type: "OAuth2",
-                user: this.username,
-                accessToken,
-            },
-        });
-
-        await transporter.sendMail({
-            from,
-            to,
-            subject,
-            text,
-            html,
-            attachments,
-            cc: additionalInfo.cc,
-            bcc: additionalInfo.bcc,
-        });
     }
 }

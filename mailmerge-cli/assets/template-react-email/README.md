@@ -100,7 +100,7 @@ DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 # - Mail.ReadWrite
 # - User.Read
 # - SMTP.Send
-# NOTE: when sending with --oauth, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
+# NOTE: when sending with --oauth=<provider>, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
 # otherwise mailmerge will print an error and refuse to send.
 DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
@@ -113,9 +113,20 @@ DOCSOC_MS_ENTRA_TENANT_ID=
 - User.Read
 - SMTP.Send
 
-Finally, when sending pass the `--oauth` flag to the `send` command:
+Finally, when sending pass the `--oauth=microsoft` flag to the `send` command:
 ```bash
-docsoc-mailmerge send ./output/<runname> --oauth
+docsoc-mailmerge send ./output/<runname> --oauth=microsoft
 ```
 
 > As a safety catch, the Microsoft account you sign in to when authenticating via OAuth **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.
+
+### Gmail OAuth
+
+You can instead send (and upload drafts) via Gmail using Google OAuth. Create an **OAuth client of type "Desktop app"** in the [Google Cloud console](https://console.cloud.google.com/) with the **Gmail API enabled**, download the credentials JSON, and set `DOCSOC_GOOGLE_CREDENTIALS_FILE` to its path. Then:
+
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth=google
+docsoc-mailmerge upload-drafts ./output/<runname> --provider=google
+```
+
+On first use a browser opens and a local server catches the OAuth redirect. The scope `https://mail.google.com/` is required for SMTP. The same safety catch applies: the Google account you sign in to **must match** `DOCSOC_SENDER_EMAIL`.

@@ -109,13 +109,34 @@ Sent email previews are automatically moved to `./output/<runname>/sent` to prev
 - User.Read
 - SMTP.Send
 
-Finally, when sending pass the `--oauth` flag to the `send` command:
+Finally, when sending pass the `--oauth=microsoft` flag to the `send` command:
 ```bash
-docsoc-mailmerge send ./output/<runname> --oauth
+docsoc-mailmerge send ./output/<runname> --oauth=microsoft
 ```
 
 >[!important]
 > As a safety catch, the Microsoft account you sign in to when authenticating via OAuth **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.
+
+### Gmail OAuth Send
+
+You can also send via Gmail using Google OAuth (XOAUTH2). To set this up:
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), create a project and **enable the Gmail API**.
+2. Configure the OAuth consent screen, and create an **OAuth client ID of type "Desktop app"**.
+3. Download the client credentials JSON and point `DOCSOC_GOOGLE_CREDENTIALS_FILE` at it in your `.env`.
+
+Then send with `--oauth=google`:
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth=google
+```
+
+On first use a browser window opens and a local loopback server catches the OAuth redirect (just like the Microsoft flow). The requested scope is `https://mail.google.com/` (required for SMTP — the narrower `gmail.send` scope does **not** work for SMTP).
+
+>[!important]
+> The same safety catch applies: the Google account you sign in to **must match** `DOCSOC_SENDER_EMAIL`. Gmail can only send as the authenticated account, so this must be the mailbox you are sending from.
+
+>[!info]
+> While your Google Cloud app is in "Testing" publishing status, refresh tokens expire after 7 days and only accounts added as test users can sign in. `https://mail.google.com/` is a restricted scope, so broad/production use requires Google app verification.
 
 
 ## Advanced Features
@@ -148,10 +169,16 @@ Note: CLI flags override any attachment info in the CSV.
 
 ### Upload to Drafts Instead of Sending
 
-To upload emails to Outlook drafts instead of sending:
+To upload emails to Outlook drafts instead of sending (always uses Microsoft Graph OAuth):
 
 ```bash
 docsoc-mailmerge upload-drafts ./output/<runname>
+```
+
+To upload to Gmail drafts instead, use `--provider=google` (requires `DOCSOC_GOOGLE_CREDENTIALS_FILE`, set up as for [Gmail OAuth Send](#gmail-oauth-send)):
+
+```bash
+docsoc-mailmerge upload-drafts ./output/<runname> --provider=google
 ```
 
 ### Rate Limiting

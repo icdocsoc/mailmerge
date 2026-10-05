@@ -58,11 +58,15 @@ DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 # - Mail.ReadWrite
 # - User.Read
 # - SMTP.Send
-# NOTE: when sending with --oauth, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
+# NOTE: when sending with --oauth=<provider>, the account you sign in to must match DOCSOC_SENDER_EMAIL above,
 # otherwise mailmerge will print an error and refuse to send.
 DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
 DOCSOC_MS_ENTRA_TENANT_ID=
+
+# For Gmail OAuth instead of Microsoft: path to a downloaded "Desktop app" OAuth client JSON
+# (Gmail API enabled). The signed-in Google account must also match DOCSOC_SENDER_EMAIL.
+DOCSOC_GOOGLE_CREDENTIALS_FILE=
 ```
 
-> As a safety catch, when sending with OAuth (`docsoc-mailmerge send ./output/<runname> --oauth`) the Microsoft account you sign in to **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.
+> As a safety catch, when sending with OAuth (`docsoc-mailmerge send ./output/<runname> --oauth=microsoft`, or `--oauth=google` for Gmail) the account you sign in to **must match** the `DOCSOC_SENDER_EMAIL` you are sending from. If they differ, `mailmerge` will print an error and refuse to send. Sign in with the sender account, or update `DOCSOC_SENDER_EMAIL` to match the account you sign in with.

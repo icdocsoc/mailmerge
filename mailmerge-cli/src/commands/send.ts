@@ -3,6 +3,7 @@ import {
     sendEmails,
     getDefaultMailer,
     getDefaultOAuthMailer,
+    getDefaultGmailOAuthMailer,
     getDefaultDoCSocFromLine,
     ENGINES_MAP,
     EmailString,
@@ -45,11 +46,11 @@ export default class Send extends Command {
             description:
                 "Path to a JSON file containing informationa about inline images - see InlineImagesSpec type for format",
         }),
-        oauth: Flags.boolean({
+        oauth: Flags.string({
             char: "o",
+            options: ["microsoft", "google"],
             description:
-                "Authenticate with Microsoft OAuth (XOAUTH2) instead of a password. Requires the DOCSOC_MS_ENTRA_TENANT_ID and DOCSOC_MS_ENTRA_CLIENT_ID env vars",
-            default: false,
+                "Send via OAuth (XOAUTH2) instead of a password: 'microsoft' (Entra, requires DOCSOC_MS_ENTRA_TENANT_ID and DOCSOC_MS_ENTRA_CLIENT_ID) or 'google' (Gmail, requires DOCSOC_GOOGLE_CREDENTIALS_FILE). Omit for password SMTP.",
         }),
     };
 
@@ -77,10 +78,17 @@ export default class Send extends Command {
             }
         }
 
+        const mailer =
+            flags.oauth === "google"
+                ? getDefaultGmailOAuthMailer()
+                : flags.oauth === "microsoft"
+                  ? getDefaultOAuthMailer()
+                  : getDefaultMailer();
+
         // Rerender previews
         await sendEmails(
             storageBackend,
-            flags.oauth ? getDefaultOAuthMailer() : getDefaultMailer(),
+            mailer,
             getDefaultDoCSocFromLine(),
             ENGINES_MAP,
             flags.yes,
