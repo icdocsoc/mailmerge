@@ -100,6 +100,21 @@ docsoc-mailmerge send ./output/<runname>
 
 Sent email previews are automatically moved to `./output/<runname>/sent` to prevent accidental double-sending.
 
+### OAuth Send
+>[!info]
+> Microsoft will soon be deprecating SMTP login, so you may want to use OAuth instead. To do this, fill in the `DOCSOC_MS_ENTRA_CLIENT_ID`, `DOCSOC_MS_ENTRA_CLIENT_SECRET`, and `DOCSOC_MS_ENTRA_TENANT_ID` fields in the `.env` file - see below
+
+`mailmerge` can send emails using either SMTP or Microsoft Graph API (via OAuth). The default is SMTP, but if you want to use OAuth, fill in the `DOCSOC_MS_ENTRA_CLIENT_ID`, `DOCSOC_MS_ENTRA_CLIENT_SECRET`, and `DOCSOC_MS_ENTRA_TENANT_ID` fields in the `.env` file. You will need to create an app registration in Entra ID and grant it the following permissions:
+- Mail.ReadWrite
+- User.Read
+- SMTP.Send
+
+Finally, when sending pass the `--oauth` flag to the `send` command:
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth
+```
+
+
 ## Advanced Features
 
 ### Attachments

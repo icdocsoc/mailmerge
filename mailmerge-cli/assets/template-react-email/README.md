@@ -94,12 +94,24 @@ DOCSOC_OUTLOOK_PASSWORD=
 # DOCSOC_SENDER_NAME=DoCSoc
 # DOCSOC_SENDER_EMAIL=docsoc@ic.ac.uk
 
-# Optional: Fill these in to uplod drafts
+# Fill these into upload drafts emails and/or send using SMTP OAuth instead of password SMTP Login
 # You will need to create an app registration in Entra ID, restricted to the organisation,
 # And grant it the following permissions:
 # - Mail.ReadWrite
 # - User.Read
+# - SMTP.Send
 DOCSOC_MS_ENTRA_CLIENT_ID=
 DOCSOC_MS_ENTRA_CLIENT_SECRET=
 DOCSOC_MS_ENTRA_TENANT_ID=
+```
+
+## Sending emails
+`mailmerge` can send emails using either SMTP or Microsoft Graph API (via OAuth). The default is SMTP, but if you want to use OAuth, fill in the `DOCSOC_MS_ENTRA_CLIENT_ID`, `DOCSOC_MS_ENTRA_CLIENT_SECRET`, and `DOCSOC_MS_ENTRA_TENANT_ID` fields in the `.env` file. You will need to create an app registration in Entra ID and grant it the following permissions:
+- Mail.ReadWrite
+- User.Read
+- SMTP.Send
+
+Finally, when sending pass the `--oauth` flag to the `send` command:
+```bash
+docsoc-mailmerge send ./output/<runname> --oauth
 ```
