@@ -196,8 +196,7 @@ describe("generatePreviews", () => {
             },
         };
 
-        /// @ts-expect-error: Mocking
-        await generatePreviews(options, mockLogger);
+        await generatePreviews(options, mockLogger as unknown as Parameters<typeof generatePreviews>[1]);
 
         expect(mockLogger.info).toHaveBeenCalled();
     });
