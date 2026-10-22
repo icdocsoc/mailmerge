@@ -48,8 +48,10 @@ docsoc-mailmerge send --help
 ```
 
 ### Inline Images
+
 You can create an `images.json` file to specify images to attach inline images.
 It should have a format like this:
+
 ```json
 [
     {
@@ -61,11 +63,13 @@ It should have a format like this:
 ```
 
 You then use the `cid` to reference the image:
+
 ```html
 <img src="cid:animage" alt="An Image" />
 ```
 
 Note that you need to tell mailmerge about the iamges files on send:
+
 ```bash
 docsoc-mailmerge send ... -i ./images.json
 ```
