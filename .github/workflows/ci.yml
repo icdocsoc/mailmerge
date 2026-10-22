@@ -78,3 +78,34 @@ jobs:
                   npm run lint -- --format unix
             - name: Prettier
               run: npm run format:check
+
+  # Posts/updates a coverage comment on the PR, diffed against the base branch.
+  # Writing a comment needs a write token, which PRs from forks never get under
+  # `pull_request`, so this only runs for same-repo PRs. Fork PRs still get
+  # build, test and lint from the jobs above.
+  coverage-report:
+    name: Coverage report
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      # Pinned to the v2.3.1 commit: third-party actions get a write token here.
+      - uses: ArtiomTr/jest-coverage-report-action@262a7bb0b20c4d1d6b6b026af0f008f78da72788 # v2.3.1
+        with:
+          # Workspace packages resolve each other through built output, so
+          # build before jest (the action also runs this on the base branch).
+          test-script: npm run build --workspaces --if-present && npx jest
+          annotations: coverage
