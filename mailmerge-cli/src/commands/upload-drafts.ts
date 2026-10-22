@@ -39,6 +39,13 @@ export default class UploadDrafts extends Command {
             description:
                 "Path to a JSON file containing informationa about inline images - see InlineImagesSpec type for format",
         }),
+        provider: Flags.string({
+            char: "p",
+            options: ["microsoft", "google"],
+            default: "microsoft",
+            description:
+                "OAuth provider to upload drafts with: 'microsoft' (Outlook via Graph, requires DOCSOC_MS_ENTRA_* env vars) or 'google' (Gmail, requires DOCSOC_GOOGLE_CREDENTIALS_FILE)",
+        }),
     };
 
     public async run(): Promise<void> {
@@ -55,6 +62,7 @@ export default class UploadDrafts extends Command {
             sleepBetween: flags.sleepBetween,
             onlySend: flags.only,
             inlineImages: flags.inlineImages,
+            provider: flags.provider as "microsoft" | "google",
         });
     }
 }
