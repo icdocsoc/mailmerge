@@ -377,7 +377,6 @@ describe("sendEmails", () => {
             enginesMap,
             true,
             { sleepBetween: 0 },
-            /// @ts-expect-error: Mocking
             mockLogger,
         );
 
@@ -428,7 +427,6 @@ describe("sendEmails", () => {
             enginesMap,
             true,
             { sleepBetween: 20 },
-            /// @ts-expect-error: Mocking
             mockLogger,
         );
 

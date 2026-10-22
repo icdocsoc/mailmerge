@@ -196,7 +196,6 @@ describe("generatePreviews", () => {
             },
         };
 
-        /// @ts-expect-error: Mocking
         await generatePreviews(options, mockLogger);
 
         expect(mockLogger.info).toHaveBeenCalled();
