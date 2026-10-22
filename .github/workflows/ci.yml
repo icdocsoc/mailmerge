@@ -91,5 +91,5 @@ jobs:
               with:
                   # Workspace packages resolve each other through built output, so
                   # build before jest (the action also runs this on the base branch).
-                  test-script: npm run build --workspaces --if-present && npx jest
+                  test-script: npm run test:ci --
                   annotations: coverage

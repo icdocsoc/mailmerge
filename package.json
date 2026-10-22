@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:ci": "npm run build --workspaces --if-present && jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "docs": "typedoc",
