@@ -20,24 +20,11 @@ env:
   NODE_VERSION: 22
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - name: Build all workspaces
-        run: npm run build --workspaces --if-present
-
-  test:
-    name: Test
+  # Build and test share one job: tests resolve workspace packages (e.g.
+  # @docsoc/util) through their built output, so a separate build job would
+  # just repeat the install and build on a second runner.
+  build-and-test:
+    name: Build & Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
