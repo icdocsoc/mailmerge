@@ -18,7 +18,7 @@
         "esModuleInterop": true,
         "paths": {
             "@docsoc/mailmerge": ["mailmerge/src/index.ts"],
-            "@docsoc/mailmerge-cli": ["mailmerge-cli/src/index.ts"],
+            "@docsoc/mailmerge-cli": ["mailmerge-cli/src/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]

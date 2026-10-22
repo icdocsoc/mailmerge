@@ -10,7 +10,7 @@
         "noFallthroughCasesInSwitch": true,
         "esModuleInterop": true,
         "baseUrl": "./",
-        "jsx": "react",
+        "jsx": "react"
     },
     "files": [],
     "include": [],

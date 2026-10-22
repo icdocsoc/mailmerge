@@ -145,7 +145,11 @@ describe("rerenderPreviews", () => {
             warn: jest.fn(),
         };
 
-        await rerenderPreviews(mockStorageBackend, enginesMap, mockLogger as unknown as Parameters<typeof rerenderPreviews>[2]);
+        await rerenderPreviews(
+            mockStorageBackend,
+            enginesMap,
+            mockLogger as unknown as Parameters<typeof rerenderPreviews>[2],
+        );
 
         expect(mockLogger.info).toHaveBeenCalledWith("Rerendering previews...");
     });

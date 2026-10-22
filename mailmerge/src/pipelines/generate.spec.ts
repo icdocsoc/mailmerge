@@ -196,7 +196,10 @@ describe("generatePreviews", () => {
             },
         };
 
-        await generatePreviews(options, mockLogger as unknown as Parameters<typeof generatePreviews>[1]);
+        await generatePreviews(
+            options,
+            mockLogger as unknown as Parameters<typeof generatePreviews>[1],
+        );
 
         expect(mockLogger.info).toHaveBeenCalled();
     });

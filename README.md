@@ -9,10 +9,10 @@ DoCSoc's most important tool: flexibly generate and send emails in bulk using te
 
 This is a monorepo containing three packages:
 
-- **`mailmerge`** - A core library for mail merge operations including template rendering, data merging, email sending via SMTP, and uploading to Outlook drafts
-- **`mailmerge-cli`** - A command-line tool that provides an easy-to-use interface for the mailmerge library
-- **`utils`** - Shared utility functions used by the other packages (kept private)
-	- This is mostly there as these tools used to live in a monorepo with such a package, and updating all the test mocks etc to move it into the packages directly was deemed more effort than just copying the package as a package.
+-   **`mailmerge`** - A core library for mail merge operations including template rendering, data merging, email sending via SMTP, and uploading to Outlook drafts
+-   **`mailmerge-cli`** - A command-line tool that provides an easy-to-use interface for the mailmerge library
+-   **`utils`** - Shared utility functions used by the other packages (kept private)
+    -   This is mostly there as these tools used to live in a monorepo with such a package, and updating all the test mocks etc to move it into the packages directly was deemed more effort than just copying the package as a package.
 
 There is also the `test-space` directory which has been used as a place to test the CLI inside by invoking it on sample data
 
@@ -68,9 +68,10 @@ docsoc-mailmerge generate react ./data/names.csv ./emails-out/Example.js -o ./ou
 You'll be prompted for a runname. Generated emails will be placed at `./output/<runname>`.
 
 Each record in the CSV results in 3 files:
-- An editable **markdown file** for modifying the email
-- A **HTML rendering** of the markdown (what actually gets sent)
-- A **`.json` metadata file** with email details
+
+-   An editable **markdown file** for modifying the email
+-   A **HTML rendering** of the markdown (what actually gets sent)
+-   A **`.json` metadata file** with email details
 
 > **Note:** If you need to edit the "to" address or subject after generation, edit the JSON files. CSV edits are ignored after generation. To use CSV edits, delete all outputs and run generate again.
 
@@ -109,7 +110,7 @@ Place attachments in an `attachments` folder. There are two ways to add them:
 **Per-email attachments (using CSV):**
 
 1. Add an `attachment` column to your CSV with the path relative to workspace root
-   - Example: `./attachments/image.jpg`
+    - Example: `./attachments/image.jpg`
 2. Use multiple columns (`attachment1`, `attachment2`) for multiple attachments
 3. You'll be prompted which columns to use during `generate`
 4. To edit attachments later, modify the JSON metadata files
@@ -124,9 +125,9 @@ Note: CLI flags override any attachment info in the CSV.
 
 ### CC, BCC, and Multiple Recipients
 
-- **Multiple To addresses:** Separate emails with spaces in the CSV column
-- **CC:** Add a `cc` column with space-separated emails and pass `--cc` to `generate`
-- **BCC:** Add a `bcc` column with space-separated emails and pass `--bcc` to `generate`
+-   **Multiple To addresses:** Separate emails with spaces in the CSV column
+-   **CC:** Add a `cc` column with space-separated emails and pass `--cc` to `generate`
+-   **BCC:** Add a `bcc` column with space-separated emails and pass `--bcc` to `generate`
 
 ### Upload to Drafts Instead of Sending
 
@@ -145,8 +146,10 @@ docsoc-mailmerge send ./output/<runname> -s 2
 ```
 
 ### Inline Images
+
 You can create an `images.json` file to specify images to attach inline images.
 It should have a format like this:
+
 ```json
 [
     {
@@ -158,11 +161,13 @@ It should have a format like this:
 ```
 
 You then use the `cid` to reference the image:
+
 ```html
 <img src="cid:animage" alt="An Image" />
 ```
 
 Note that you need to tell mailmerge about the iamges files on send:
+
 ```bash
 docsoc-mailmerge send ... -i ./images.json
 ```
@@ -228,6 +233,7 @@ npm run format
 3. Run `npm link` in the `mailmerge-cli` folder to add `docsoc-mailmerge` to your PATH
 
 ## Publishing
+
 1. Build a production version of the packages using `npm run build --workspaces`
 2. Create a new changeset using `npx changeset` and follow the prompts to specify version bumps and a summary of changes
 3. Version things using `npx changeset version` - this updates package.json files and creates changelog entries based on your changeset summaries
@@ -243,5 +249,5 @@ Kishan Sambhi <kishansambhi@hotmail.co.uk>
 
 ## Links
 
-- [GitHub Repository](https://github.com/icdocsoc/mailmerge)
-- [Issues](https://github.com/icdocsoc/mailmerge/issues)
+-   [GitHub Repository](https://github.com/icdocsoc/mailmerge)
+-   [Issues](https://github.com/icdocsoc/mailmerge/issues)
