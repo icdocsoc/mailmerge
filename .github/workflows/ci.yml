@@ -1,60 +1,80 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  # Deliberately `pull_request` (not `pull_request_target`): PR code (including
-  # forks) runs with a read-only token and no access to repository secrets.
-  pull_request:
+    push:
+        branches: [main]
+    # Deliberately `pull_request` (not `pull_request_target`): PR code (including
+    # forks) runs with a read-only token and no access to repository secrets.
+    pull_request:
 
 # Least privilege: CI only needs to read the repository.
 permissions:
-  contents: read
+    contents: read
 
 # Cancel superseded runs on PRs, but never cancel runs on main.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  NODE_VERSION: 22
+    NODE_VERSION: 22
 
 jobs:
-  # Build and test share one job: tests resolve workspace packages (e.g.
-  # @docsoc/util) through their built output, so a separate build job would
-  # just repeat the install and build on a second runner.
-  build-and-test:
-    name: Build & Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - name: Build all workspaces
-        run: npm run build --workspaces --if-present
-      - name: Run tests
-        run: npm test -- --ci
+    # Build and test share one job: tests resolve workspace packages (e.g.
+    # @docsoc/util) through their built output, so a separate build job would
+    # just repeat the install and build on a second runner.
+    build-and-test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - run: npm ci --ignore-scripts
+            - name: Build all workspaces
+              run: npm run build --workspaces --if-present
+            - name: Run tests with coverage
+              # The github-actions reporter annotates failing tests on the PR.
+              run: >-
+                  npm test -- --ci --coverage
+                  --coverageReporters=json-summary
+                  --coverageReporters=lcov
+                  --coverageReporters=text-summary
+                  --reporters=default
+                  --reporters=github-actions
+            - name: Coverage summary
+              if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
+              run: node .github/scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+            - name: Upload coverage report
+              if: ${{ !cancelled() && hashFiles('coverage/lcov.info') != '' }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage
+                  path: coverage/
+                  retention-days: 14
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - name: ESLint
-        run: npm run lint
-      - name: Prettier
-        run: npm run format:check
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+            - run: npm ci --ignore-scripts
+            - name: ESLint
+              # The matcher turns eslint's unix-format output into inline PR annotations.
+              run: |
+                  echo "::add-matcher::.github/eslint-unix-matcher.json"
+                  npm run lint -- --format unix
+            - name: Prettier
+              run: npm run format:check
