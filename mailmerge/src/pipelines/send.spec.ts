@@ -377,7 +377,7 @@ describe("sendEmails", () => {
             enginesMap,
             true,
             { sleepBetween: 0 },
-            mockLogger,
+            mockLogger as unknown as Parameters<typeof sendEmails>[6],
         );
 
         expect(mockLogger.info).toHaveBeenCalled();
@@ -427,7 +427,7 @@ describe("sendEmails", () => {
             enginesMap,
             true,
             { sleepBetween: 20 },
-            mockLogger,
+            mockLogger as unknown as Parameters<typeof sendEmails>[6],
         );
 
         expect(mockSetTimeout).toHaveBeenNthCalledWith(1, expect.anything(), 20 * 1000);
